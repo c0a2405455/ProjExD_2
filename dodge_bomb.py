@@ -50,7 +50,7 @@ def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]: # 爆弾拡大、加�
         pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
         b_img.append(bb_img)
     return b_img, bb_accs
-
+"""
 def get_kk_img(sum_mv: tuple[int, int]) -> pg.Surface:
     kk_dict = {
         (0, -5): kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 270, 0.9),
@@ -59,15 +59,18 @@ def get_kk_img(sum_mv: tuple[int, int]) -> pg.Surface:
     }
     if sum_mv == [0, -5]:
         return
+"""
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
+
     # こうかとん初期化
     bg_img = pg.image.load("fig/pg_bg.jpg")    
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
+
     # 爆弾初期化
     bb_imgs, bb_accs = init_bb_imgs()
     bb_img = pg.Surface((20, 20))
@@ -113,16 +116,19 @@ def main():
         if key_lst[pg.K_RIGHT]:
             sum_mv[0] += 5
         """
+
         kk_rct.move_ip(sum_mv) # こうかとんの移動
         if check_bound(kk_rct) != (True, True): # 画面外だったら
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1]) # 画面内に戻す
         screen.blit(kk_img, kk_rct)
+
         bb_rct.move_ip(avx, avy) # 爆弾の移動 
         yoko, tate = check_bound(bb_rct)
         if not yoko: # 左右どちらかにはみ出ていたら
             vx *= -1
         if not tate: # 上下どちらかにはみ出ていたら
             vy *= -1
+
         screen.blit(bb_img, bb_rct) # 爆弾の表示
         pg.display.update()
         tmr += 1
