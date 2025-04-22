@@ -42,7 +42,7 @@ def gameover(screen: pg.Surface) -> None: # ゲームオーバー機能
     screen.blit(ck_img,[720,325])
     pg.display.update()
 
-def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]: # 爆弾拡大、加速機能
     b_img = []
     bb_accs = [a for a in range(1, 11)]
     for r in range(1, 11):
@@ -50,6 +50,15 @@ def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
         pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
         b_img.append(bb_img)
     return b_img, bb_accs
+
+def get_kk_img(sum_mv: tuple[int, int]) -> pg.Surface:
+    kk_dict = {
+        (0, -5): kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 270, 0.9),
+        (+5, -5): kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 315, 0.9),
+        (+5, 0): kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9),
+    }
+    if sum_mv == [0, -5]:
+        return
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
