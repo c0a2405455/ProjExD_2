@@ -30,18 +30,26 @@ def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
     return yoko, tate
 
 def gameover(screen: pg.Surface) -> None: # ゲームオーバー機能
-    bg_rct = pg.Surface((1400, 800))
-    pg.draw.rect(bg_rct,(0,0,0),(0,0,1100,650))
+    bg_rct = pg.Surface((WIDTH, HEIGHT))
+    pg.draw.rect(bg_rct,(0,0,0),(0,0,WIDTH,HEIGHT))
     bg_rct.set_alpha(150)
     screen.blit(bg_rct,[0, 0])
-    fonto = pg.font.Font(None, 50)
+    fonto = pg.font.Font(None, 70)
     txt = fonto.render("Game Over",True, (255, 255, 255))
-    screen.blit(txt, [480, 325])
+    screen.blit(txt, [450, 325])
     ck_img =pg.image.load("fig/4.png")
-    screen.blit(ck_img,[420,325])
-    screen.blit(ck_img,[700,325])
+    screen.blit(ck_img,[400,325])
+    screen.blit(ck_img,[720,325])
     pg.display.update()
 
+def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    b_img = []
+    bb_accs = [a for a in range(1, 11)]
+    for r in range(1, 11):
+        bb_img = pg.Surface((20*r, 20*r))
+        pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
+        b_img.append(bb_img)
+    return b_img, bb_accs
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -52,13 +60,14 @@ def main():
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
     # 爆弾初期化
+    bb_imgs, bb_accs = init_bb_imgs()
     bb_img = pg.Surface((20, 20))
     pg.draw.circle(bb_img, (255, 0, 0), (10, 10), 10)
     bb_rct = bb_img.get_rect()
     bb_rct.center = random.randint(0, WIDTH), random.randint(0, HEIGHT)
     bb_img.set_colorkey((0, 0, 0))
     vx, vy = +5, +5 # 爆弾の速度
-
+    
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -67,7 +76,13 @@ def main():
                 return
         screen.blit(bg_img, [0, 0]) 
 
-        # こうかとんRectと爆弾Rectが重なっていたら
+         # 爆弾の拡大、加速
+        avx = vx*bb_accs[min(tmr//500, 9)]
+        avy = vy*bb_accs[min(tmr//500, 9)]
+        bb_img = bb_imgs[min(tmr//500, 9)]
+        bb_img.set_colorkey((0, 0, 0))
+
+         # こうかとんRectと爆弾Rectが重なっていたら
         if kk_rct.colliderect(bb_rct):
             gameover(screen)
             time.sleep(5)
@@ -93,7 +108,7 @@ def main():
         if check_bound(kk_rct) != (True, True): # 画面外だったら
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1]) # 画面内に戻す
         screen.blit(kk_img, kk_rct)
-        bb_rct.move_ip(vx, vy) # 爆弾の移動 
+        bb_rct.move_ip(avx, avy) # 爆弾の移動 
         yoko, tate = check_bound(bb_rct)
         if not yoko: # 左右どちらかにはみ出ていたら
             vx *= -1
